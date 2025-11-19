@@ -172,9 +172,11 @@ export default async function DashboardPage() {
                         <Download className="mr-2 h-4 w-4" />
                         Export CSV
                     </Button>
-                    <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Subscription
+                    <Button asChild className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700">
+                        <a href="/subscriptions/new">
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Subscription
+                        </a>
                     </Button>
                 </div>
             </div>
@@ -224,9 +226,11 @@ export default async function DashboardPage() {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem>
-                                                            <Edit className="mr-2 h-4 w-4" />
-                                                            Edit
+                                                        <DropdownMenuItem asChild>
+                                                            <a href={`/subscriptions/${sub.id}`} className="flex items-center cursor-pointer">
+                                                                <Edit className="mr-2 h-4 w-4" />
+                                                                Edit
+                                                            </a>
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem>
                                                             <Pause className="mr-2 h-4 w-4" />
@@ -257,9 +261,11 @@ export default async function DashboardPage() {
                                 <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-sm">
                                     Add your first subscription to start tracking your monthly spending and get renewal reminders
                                 </p>
-                                <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700">
-                                    <Plus className="mr-2 h-5 w-5" />
-                                    Add your first subscription
+                                <Button asChild size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700">
+                                    <a href="/subscriptions/new">
+                                        <Plus className="mr-2 h-5 w-5" />
+                                        Add your first subscription
+                                    </a>
                                 </Button>
                             </CardContent>
                         </Card>
