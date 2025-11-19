@@ -70,7 +70,7 @@ export function OnboardingClient() {
                 {/* Header */}
                 <div className="mb-8 space-y-3">
                     <div className="flex items-center gap-3">
-                        <h1 className="text-4xl font-bold">Let's set up your subscriptions</h1>
+                        <h1 className="text-4xl font-bold">Let&apos;s set up your subscriptions</h1>
                         {selected.size > 0 && (
                             <Badge variant="secondary" className="text-base px-3 py-1">
                                 {selected.size} selected
@@ -117,8 +117,8 @@ export function OnboardingClient() {
                                 <Card
                                     key={service.name}
                                     className={`cursor-pointer transition-all hover:shadow-md ${isSelected
-                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20'
-                                            : 'border-slate-200 dark:border-slate-800'
+                                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20'
+                                        : 'border-slate-200 dark:border-slate-800'
                                         }`}
                                     onClick={() => toggleSelection(service.name)}
                                 >

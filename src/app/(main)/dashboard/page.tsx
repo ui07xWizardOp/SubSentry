@@ -192,51 +192,56 @@ export default async function DashboardPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="space-y-4">
-                                    {stats?.subscriptions.map((sub: any) => (
-                                        <div key={sub.id} className="flex items-center justify-between p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50">
-                                            <div className="flex items-center gap-4 flex-1">
-                                                <Avatar>
-                                                    <AvatarFallback>{sub.name[0]}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex-1">
-                                                    <h3 className="font-semibold">{sub.name}</h3>
-                                                    <p className="text-sm text-slate-500">{sub.category || 'Uncategorized'}</p>
+                                    {stats?.subscriptions.map((sub: { id: string; name: string; category?: string; amount: number; billing_cycle: string; next_renewal_date: string }) => {
+                                        // Calculate days outside JSX to avoid impure function call during render
+                                        const daysUntilRenewal = Math.ceil((new Date(sub.next_renewal_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+
+                                        return (
+                                            <div key={sub.id} className="flex items-center justify-between p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                                                <div className="flex items-center gap-4 flex-1">
+                                                    <Avatar>
+                                                        <AvatarFallback>{sub.name[0]}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex-1">
+                                                        <h3 className="font-semibold">{sub.name}</h3>
+                                                        <p className="text-sm text-slate-500">{sub.category || 'Uncategorized'}</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="font-semibold">${sub.amount}</p>
+                                                        <p className="text-xs text-slate-500">{sub.billing_cycle}</p>
+                                                    </div>
+                                                    <div className="text-right min-w-[100px]">
+                                                        <p className="text-sm">{new Date(sub.next_renewal_date).toLocaleDateString()}</p>
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {daysUntilRenewal} days
+                                                        </Badge>
+                                                    </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="font-semibold">${sub.amount}</p>
-                                                    <p className="text-xs text-slate-500">{sub.billing_cycle}</p>
-                                                </div>
-                                                <div className="text-right min-w-[100px]">
-                                                    <p className="text-sm">{new Date(sub.next_renewal_date).toLocaleDateString()}</p>
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {Math.ceil((new Date(sub.next_renewal_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days
-                                                    </Badge>
-                                                </div>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="sm">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem>
+                                                            <Edit className="mr-2 h-4 w-4" />
+                                                            Edit
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem>
+                                                            <Pause className="mr-2 h-4 w-4" />
+                                                            Pause
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem className="text-red-600">
+                                                            <Trash className="mr-2 h-4 w-4" />
+                                                            Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="sm">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem>
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Edit
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem>
-                                                        <Pause className="mr-2 h-4 w-4" />
-                                                        Pause
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem className="text-red-600">
-                                                        <Trash className="mr-2 h-4 w-4" />
-                                                        Delete
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    ))}
+                                        )
+                                    })}
                                 </div>
                             </CardContent>
                         </Card>

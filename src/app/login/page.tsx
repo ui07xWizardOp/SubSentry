@@ -80,11 +80,14 @@ export default function LoginPage() {
                 router.push('/dashboard')
                 router.refresh()
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Auth error:', err)
 
             // Provide user-friendly error messages
-            let errorMessage = err.message || 'An unexpected error occurred'
+            let errorMessage = 'An unexpected error occurred'
+            if (err && typeof err === 'object' && 'message' in err) {
+                errorMessage = String(err.message)
+            }
 
             if (errorMessage.includes('Invalid login credentials')) {
                 errorMessage = 'Invalid email or password. Please try again.'
