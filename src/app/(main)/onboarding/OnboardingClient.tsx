@@ -104,105 +104,121 @@ export function OnboardingClient({ initialCurrency }: OnboardingClientProps) {
                     <p className="text-lg text-slate-600 dark:text-slate-400">
                         Select the services you currently use. You can add custom ones later.
                     </p>
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                    <Input
-                        placeholder="Search services..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
-                    />
                 </div>
 
-                <div className="flex items-center gap-2 flex-wrap">
-                    {CATEGORIES.map(category => (
-                        <Badge
-                            key={category}
-                            variant={activeCategory === category ? "default" : "outline"}
-                            className="cursor-pointer"
-                            onClick={() => setActiveCategory(category)}
-                        >
-                            {category}
-                        </Badge>
-                    ))}
+                {/* Currency Selector */}
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold">Select your currency</h2>
+                    <div className="w-40">
+                        <CurrencySelector
+                            value={currency}
+                            onValueChange={(val) => setCurrency(val as CurrencyCode)}
+                        />
+                    </div>
                 </div>
-            </div>
 
-            {/* Subscription Grid */}
-            <ScrollArea className="h-[500px] mb-8">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pr-4">
-                    {filteredServices.map(service => {
-                        const isSelected = selected.has(service.name)
-                        return (
-                            <Card
-                                key={service.name}
-                                className={`cursor-pointer transition-all hover:shadow-md ${isSelected
-                                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20'
-                                    : 'border-slate-200 dark:border-slate-800'
-                                    }`}
-                                onClick={() => toggleSelection(service.name)}
+                {/* Search & Filter */}
+                <div className="mb-6 space-y-4">
+                    <div className="relative max-w-md">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                        <Input
+                            placeholder="Search services..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10"
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                        {CATEGORIES.map(category => (
+                            <Badge
+                                key={category}
+                                variant={activeCategory === category ? "default" : "outline"}
+                                className="cursor-pointer"
+                                onClick={() => setActiveCategory(category)}
                             >
-                                <div className="p-4 space-y-3 relative">
-                                    {/* Selected Indicator */}
-                                    {isSelected && (
-                                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center">
-                                            <Check className="w-4 h-4 text-white" />
-                                        </div>
-                                    )}
-
-                                    {/* Avatar */}
-                                    <Avatar className="w-12 h-12">
-                                        <AvatarFallback className={service.color}>
-                                            {service.name[0]}
-                                        </AvatarFallback>
-                                    </Avatar>
-
-                                    {/* Service Info */}
-                                    <div>
-                                        <h3 className="font-semibold text-sm">{service.name}</h3>
-                                        <p className="text-xs text-slate-500">
-                                            From ${service.price}/mo
-                                        </p>
-                                    </div>
-                                </div>
-                            </Card>
-                        )
-                    })}
+                                {category}
+                            </Badge>
+                        ))}
+                    </div>
                 </div>
-            </ScrollArea>
 
-            {/* Bottom Actions - Sticky */}
-            <div className="sticky bottom-0 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 p-6 -mx-4">
-                <div className="container max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                        You can add, edit, or remove these anytime in your dashboard
-                    </p>
+                {/* Subscription Grid */}
+                <ScrollArea className="h-[500px] mb-8">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pr-4">
+                        {filteredServices.map(service => {
+                            const isSelected = selected.has(service.name)
+                            return (
+                                <Card
+                                    key={service.name}
+                                    className={`cursor-pointer transition-all hover:shadow-md ${isSelected
+                                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20'
+                                        : 'border-slate-200 dark:border-slate-800'
+                                        }`}
+                                    onClick={() => toggleSelection(service.name)}
+                                >
+                                    <div className="p-4 space-y-3 relative">
+                                        {/* Selected Indicator */}
+                                        {isSelected && (
+                                            <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center">
+                                                <Check className="w-4 h-4 text-white" />
+                                            </div>
+                                        )}
 
-                    <div className="flex items-center gap-3">
-                        <Button variant="ghost" asChild disabled={loading}>
-                            <a href="/dashboard">Skip for now</a>
-                        </Button>
-                        <Button
-                            size="lg"
-                            disabled={selected.size === 0 || loading}
-                            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700"
-                            onClick={handleContinue}
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Setting up...
-                                </>
-                            ) : (
-                                <>
-                                    Continue with {selected.size} subscription{selected.size !== 1 ? 's' : ''}
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </>
-                            )}
-                        </Button>
+                                        {/* Avatar */}
+                                        <Avatar className="w-12 h-12">
+                                            <AvatarFallback className={service.color}>
+                                                {service.name[0]}
+                                            </AvatarFallback>
+                                        </Avatar>
+
+                                        {/* Service Info */}
+                                        <div>
+                                            <h3 className="font-semibold text-sm">{service.name}</h3>
+                                            <p className="text-xs text-slate-500">
+                                                From ${service.price}/mo
+                                            </p>
+                                        </div>
+                                    </div>
+                                </Card>
+                            )
+                        })}
+                    </div>
+                </ScrollArea>
+
+                {/* Bottom Actions - Sticky */}
+                <div className="sticky bottom-0 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 p-6 -mx-4">
+                    <div className="container max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                            You can add, edit, or remove these anytime in your dashboard
+                        </p>
+
+                        <div className="flex items-center gap-3">
+                            <Button variant="ghost" asChild disabled={loading}>
+                                <a href="/dashboard">Skip for now</a>
+                            </Button>
+                            <Button
+                                size="lg"
+                                disabled={selected.size === 0 || loading}
+                                className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700"
+                                onClick={handleContinue}
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Setting up...
+                                    </>
+                                ) : (
+                                    <>
+                                        Continue with {selected.size} subscription{selected.size !== 1 ? 's' : ''}
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </>
+                                )}
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div >
     )
 }
