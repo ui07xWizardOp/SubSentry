@@ -24,13 +24,15 @@ import { format } from 'date-fns'
 import { CalendarIcon, ArrowLeft, Loader2 } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
 import { useToast } from '@/hooks/use-toast'
+import { CurrencySelector } from '@/components/currency/CurrencySelector'
+import type { CurrencyCode } from '@/lib/currency/converter'
 
 const subscriptionSchema = z.object({
     name: z.string().min(1, 'Name is required').max(100),
     amount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
         message: 'Amount must be a positive number',
     }),
-    currency: z.string().default('USD'),
+    currency: z.string().min(3).max(3),
     billing_cycle: z.enum(['weekly', 'monthly', 'yearly']),
     start_date: z.date(),
     next_renewal_date: z.date(),
@@ -140,7 +142,7 @@ export default function NewSubscriptionPage() {
                 next_renewal_date: data.next_renewal_date.toISOString(),
                 category: data.category || 'Other',
                 notes: data.notes,
-                payment_method: data.payment_method,
+                // payment_method: data.payment_method, // Removed as it likely doesn't exist in DB
                 status: 'active',
             })
 
@@ -153,11 +155,11 @@ export default function NewSubscriptionPage() {
 
             router.push('/dashboard')
             router.refresh()
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error adding subscription:', error)
             toast({
                 title: 'Error',
-                description: 'Failed to add subscription. Please try again.',
+                description: error.message || 'Failed to add subscription. Please try again.',
                 variant: 'destructive',
             })
         } finally {
@@ -166,8 +168,8 @@ export default function NewSubscriptionPage() {
     }
 
     const handleServiceSelect = (service: typeof POPULAR_SERVICES[0]) => {
-        setValue('name', service.name)
-        setValue('category', service.category)
+        setValue('name', service.name, { shouldValidate: true })
+        setValue('category', service.category, { shouldValidate: true })
         setShowServiceSuggestions(false)
     }
 
@@ -253,20 +255,10 @@ export default function NewSubscriptionPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="currency">Currency</Label>
-                                <Select
-                                    defaultValue="USD"
-                                    onValueChange={(value) => setValue('currency', value)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="USD">USD ($)</SelectItem>
-                                        <SelectItem value="EUR">EUR (€)</SelectItem>
-                                        <SelectItem value="GBP">GBP (£)</SelectItem>
-                                        <SelectItem value="INR">INR (₹)</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <CurrencySelector
+                                    value={watch('currency') || 'USD'}
+                                    onValueChange={(value) => setValue('currency', value as CurrencyCode)}
+                                />
                             </div>
                         </div>
 

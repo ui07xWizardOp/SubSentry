@@ -1,7 +1,7 @@
-import { AppShell } from "@/components/layout/AppShell"
+import { AppShell } from '@/components/layout/AppShell'
 
 export default function MainLayout({
-    children
+    children,
 }: {
     children: React.ReactNode
 }) {

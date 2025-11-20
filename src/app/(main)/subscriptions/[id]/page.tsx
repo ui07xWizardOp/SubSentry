@@ -33,13 +33,15 @@ import { format } from 'date-fns'
 import { CalendarIcon, ArrowLeft, Loader2, Trash2 } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
 import { useToast } from '@/hooks/use-toast'
+import { CurrencySelector } from '@/components/currency/CurrencySelector'
+import type { CurrencyCode } from '@/lib/currency/converter'
 
 const subscriptionSchema = z.object({
     name: z.string().min(1, 'Name is required').max(100),
     amount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
         message: 'Amount must be a positive number',
     }),
-    currency: z.string().default('USD'),
+    currency: z.string().min(3).max(3),
     billing_cycle: z.enum(['weekly', 'monthly', 'yearly']),
     start_date: z.date(),
     next_renewal_date: z.date(),
@@ -308,20 +310,10 @@ export default function EditSubscriptionPage({ params }: { params: { id: string 
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="currency">Currency</Label>
-                                <Select
-                                    value={watch('currency')}
-                                    onValueChange={(value) => setValue('currency', value)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="USD">USD ($)</SelectItem>
-                                        <SelectItem value="EUR">EUR (€)</SelectItem>
-                                        <SelectItem value="GBP">GBP (£)</SelectItem>
-                                        <SelectItem value="INR">INR (₹)</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <CurrencySelector
+                                    value={watch('currency') || 'USD'}
+                                    onValueChange={(value) => setValue('currency', value as CurrencyCode)}
+                                />
                             </div>
                         </div>
 

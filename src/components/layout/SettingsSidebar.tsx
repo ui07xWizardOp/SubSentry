@@ -34,7 +34,7 @@ const sidebarItems = [
     },
     {
         title: 'Data & Privacy',
-        href: '/settings/data',
+        href: '/settings/data-management',
         icon: Database,
     },
 ]

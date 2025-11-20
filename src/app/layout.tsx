@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "@/lib/posthog/provider";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
@@ -25,14 +26,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${manrope.variable} font-sans antialiased`}
       >
-        <PostHogProvider>
-          {children}
-          <Toaster />
-        </PostHogProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <PostHogProvider>
+            {children}
+            <Toaster />
+          </PostHogProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

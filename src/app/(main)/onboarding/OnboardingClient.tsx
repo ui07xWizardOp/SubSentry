@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -8,7 +8,12 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Search, Check, ArrowRight } from 'lucide-react'
+import { Search, Check, ArrowRight, Loader2 } from 'lucide-react'
+import { createOnboardingSubscriptions } from './actions'
+import { useToast } from '@/hooks/use-toast'
+import { detectUserCurrency } from '@/lib/currency/server'
+import { CurrencySelector } from '@/components/currency/CurrencySelector'
+import type { CurrencyCode } from '@/lib/currency/converter'
 
 const POPULAR_SERVICES = [
     { name: 'Netflix', price: 15.99, category: 'Streaming', color: 'bg-red-500' },
@@ -29,12 +34,30 @@ const CATEGORIES = ['All', 'Streaming', 'Music', 'Productivity', 'Cloud Storage'
 
 export function OnboardingClient() {
     const router = useRouter()
+    const { toast } = useToast()
     const [selected, setSelected] = useState<Set<string>>(new Set())
     const [searchQuery, setSearchQuery] = useState('')
     const [activeCategory, setActiveCategory] = useState('All')
+    const [loading, setLoading] = useState(false)
+    const [currency, setCurrency] = useState<CurrencyCode>('USD')
+    const [isDetectingCurrency, setIsDetectingCurrency] = useState(true)
+
+    useEffect(() => {
+        async function initCurrency() {
+            try {
+                const detected = await detectUserCurrency()
+                if (detected) setCurrency(detected)
+            } catch (error) {
+                console.error('Failed to detect currency:', error)
+            } finally {
+                setIsDetectingCurrency(false)
+            }
+        }
+        initCurrency()
+    }, [])
 
     const toggleSelection = (serviceName: string) => {
-        const newSelected = new Set(selected) // Creates new Set - React will detect change
+        const newSelected = new Set(selected)
         if (newSelected.has(serviceName)) {
             newSelected.delete(serviceName)
         } else {
@@ -43,10 +66,23 @@ export function OnboardingClient() {
         setSelected(newSelected)
     }
 
-    // TODO: Implement actual subscription creation API call on continue
     const handleContinue = async () => {
-        // Will batch-create subscriptions from selected Set
-        router.push('/dashboard')
+        setLoading(true)
+        try {
+            await createOnboardingSubscriptions(Array.from(selected))
+            toast({
+                title: "Success!",
+                description: "Your subscriptions have been added.",
+            })
+        } catch (error) {
+            console.error('Error creating subscriptions:', error)
+            toast({
+                title: "Error",
+                description: "Failed to create subscriptions. Please try again.",
+                variant: "destructive",
+            })
+            setLoading(false)
+        }
     }
 
     const filteredServices = POPULAR_SERVICES.filter(service => {
@@ -80,6 +116,24 @@ export function OnboardingClient() {
                     <p className="text-lg text-slate-600 dark:text-slate-400">
                         Select the services you currently use. You can add custom ones later.
                     </p>
+                </div>
+
+                {/* Currency Selector */}
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold">Select your currency</h2>
+                    <div className="w-40">
+                        {isDetectingCurrency ? (
+                            <div className="flex items-center gap-2 text-sm text-slate-500">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Detecting...
+                            </div>
+                        ) : (
+                            <CurrencySelector
+                                value={currency}
+                                onValueChange={(val) => setCurrency(val as CurrencyCode)}
+                            />
+                        )}
+                    </div>
                 </div>
 
                 {/* Search & Filter */}
@@ -117,8 +171,8 @@ export function OnboardingClient() {
                                 <Card
                                     key={service.name}
                                     className={`cursor-pointer transition-all hover:shadow-md ${isSelected
-                                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20'
-                                        : 'border-slate-200 dark:border-slate-800'
+                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20'
+                                            : 'border-slate-200 dark:border-slate-800'
                                         }`}
                                     onClick={() => toggleSelection(service.name)}
                                 >
@@ -159,18 +213,26 @@ export function OnboardingClient() {
                         </p>
 
                         <div className="flex items-center gap-3">
-                            {/* Link for navigation - using Button with asChild */}
-                            <Button variant="ghost" asChild>
-                                <a href="/dashboard">Skip for now</a> {/* NOTE: Ensure /dashboard route exists and auth middleware allows access */}
+                            <Button variant="ghost" asChild disabled={loading}>
+                                <a href="/dashboard">Skip for now</a>
                             </Button>
                             <Button
                                 size="lg"
-                                disabled={selected.size === 0}
+                                disabled={selected.size === 0 || loading}
                                 className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700"
                                 onClick={handleContinue}
                             >
-                                Continue with {selected.size} subscription{selected.size !== 1 ? 's' : ''}
-                                <ArrowRight className="ml-2 h-4 w-4" />
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Setting up...
+                                    </>
+                                ) : (
+                                    <>
+                                        Continue with {selected.size} subscription{selected.size !== 1 ? 's' : ''}
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </div>
