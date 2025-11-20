@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -11,7 +11,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Search, Check, ArrowRight, Loader2 } from 'lucide-react'
 import { createOnboardingSubscriptions } from './actions'
 import { useToast } from '@/hooks/use-toast'
-import { detectUserCurrency } from '@/lib/currency/server'
 import { CurrencySelector } from '@/components/currency/CurrencySelector'
 import type { CurrencyCode } from '@/lib/currency/converter'
 
@@ -32,29 +31,18 @@ const POPULAR_SERVICES = [
 
 const CATEGORIES = ['All', 'Streaming', 'Music', 'Productivity', 'Cloud Storage']
 
-export function OnboardingClient() {
+interface OnboardingClientProps {
+    initialCurrency: CurrencyCode
+}
+
+export function OnboardingClient({ initialCurrency }: OnboardingClientProps) {
     const router = useRouter()
     const { toast } = useToast()
     const [selected, setSelected] = useState<Set<string>>(new Set())
     const [searchQuery, setSearchQuery] = useState('')
     const [activeCategory, setActiveCategory] = useState('All')
     const [loading, setLoading] = useState(false)
-    const [currency, setCurrency] = useState<CurrencyCode>('USD')
-    const [isDetectingCurrency, setIsDetectingCurrency] = useState(true)
-
-    useEffect(() => {
-        async function initCurrency() {
-            try {
-                const detected = await detectUserCurrency()
-                if (detected) setCurrency(detected)
-            } catch (error) {
-                console.error('Failed to detect currency:', error)
-            } finally {
-                setIsDetectingCurrency(false)
-            }
-        }
-        initCurrency()
-    }, [])
+    const [currency, setCurrency] = useState<CurrencyCode>(initialCurrency)
 
     const toggleSelection = (serviceName: string) => {
         const newSelected = new Set(selected)
@@ -122,17 +110,10 @@ export function OnboardingClient() {
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-semibold">Select your currency</h2>
                     <div className="w-40">
-                        {isDetectingCurrency ? (
-                            <div className="flex items-center gap-2 text-sm text-slate-500">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Detecting...
-                            </div>
-                        ) : (
-                            <CurrencySelector
-                                value={currency}
-                                onValueChange={(val) => setCurrency(val as CurrencyCode)}
-                            />
-                        )}
+                        <CurrencySelector
+                            value={currency}
+                            onValueChange={(val) => setCurrency(val as CurrencyCode)}
+                        />
                     </div>
                 </div>
 
