@@ -1,0 +1,7 @@
+# ESLint ignore patterns
+sub-sentry-frontend-prototype/
+*.backup
+node_modules/
+.next/
+out/
+build/

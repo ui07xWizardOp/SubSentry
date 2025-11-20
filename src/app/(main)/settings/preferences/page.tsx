@@ -141,7 +141,7 @@ export default function PreferencesPage() {
                                 </div>
                             </div>
                             <p className="text-xs text-slate-500">
-                                We'll alert you if your monthly subscriptions exceed this amount.
+                                We&apos;ll alert you if your monthly subscriptions exceed this amount.
                             </p>
                         </div>
 

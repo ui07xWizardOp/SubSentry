@@ -155,11 +155,12 @@ export default function NewSubscriptionPage() {
 
             router.push('/dashboard')
             router.refresh()
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error adding subscription:', error)
+            const errorMessage = error instanceof Error ? error.message : 'Failed to add subscription. Please try again.'
             toast({
                 title: 'Error',
-                description: error.message || 'Failed to add subscription. Please try again.',
+                description: errorMessage,
                 variant: 'destructive',
             })
         } finally {

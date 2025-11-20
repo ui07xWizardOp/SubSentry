@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { convertCurrency, type CurrencyCode } from '@/lib/currency/converter'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -125,7 +126,7 @@ export default async function DashboardPage() {
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Upcoming Renewals</h2>
                         <Button variant="ghost" asChild className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
-                            <a href="/subscriptions">View all subscriptions</a>
+                            <Link href="/subscriptions">View all subscriptions</Link>
                         </Button>
                     </div>
 
@@ -144,7 +145,7 @@ export default async function DashboardPage() {
                                     No upcoming renewals
                                 </h3>
                                 <p className="text-slate-500 dark:text-slate-400 text-sm">
-                                    You're all caught up for the next 30 days.
+                                    You&apos;re all caught up for the next 30 days.
                                 </p>
                             </CardContent>
                         </Card>
@@ -161,10 +162,10 @@ export default async function DashboardPage() {
                                     Add your first subscription to start tracking your monthly spending and get renewal reminders
                                 </p>
                                 <Button asChild size="lg" className="bg-indigo-600 hover:bg-indigo-700">
-                                    <a href="/subscriptions/new">
+                                    <Link href="/subscriptions/new">
                                         <Plus className="mr-2 h-5 w-5" />
                                         Add your first subscription
-                                    </a>
+                                    </Link>
                                 </Button>
                             </CardContent>
                         </Card>
