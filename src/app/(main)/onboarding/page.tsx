@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { OnboardingClient } from './OnboardingClient'
-import { detectUserCurrency } from '@/lib/currency/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,8 +12,6 @@ export default async function OnboardingPage() {
         redirect('/login')
     }
 
-    // Detect currency on server
-    const initialCurrency = await detectUserCurrency()
-
-    return <OnboardingClient initialCurrency={initialCurrency} />
+    // Default to USD - user can change it in the UI
+    return <OnboardingClient initialCurrency="USD" />
 }
