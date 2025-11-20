@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -11,7 +11,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Search, Check, ArrowRight, Loader2 } from 'lucide-react'
 import { createOnboardingSubscriptions } from './actions'
 import { useToast } from '@/hooks/use-toast'
-import { detectUserCurrency } from '@/lib/currency/server'
 import { CurrencySelector } from '@/components/currency/CurrencySelector'
 import type { CurrencyCode } from '@/lib/currency/converter'
 
@@ -32,29 +31,18 @@ const POPULAR_SERVICES = [
 
 const CATEGORIES = ['All', 'Streaming', 'Music', 'Productivity', 'Cloud Storage']
 
-export function OnboardingClient() {
+interface OnboardingClientProps {
+    initialCurrency: CurrencyCode
+}
+
+export function OnboardingClient({ initialCurrency }: OnboardingClientProps) {
     const router = useRouter()
     const { toast } = useToast()
     const [selected, setSelected] = useState<Set<string>>(new Set())
     const [searchQuery, setSearchQuery] = useState('')
     const [activeCategory, setActiveCategory] = useState('All')
     const [loading, setLoading] = useState(false)
-    const [currency, setCurrency] = useState<CurrencyCode>('USD')
-    const [isDetectingCurrency, setIsDetectingCurrency] = useState(true)
-
-    useEffect(() => {
-        async function initCurrency() {
-            try {
-                const detected = await detectUserCurrency()
-                if (detected) setCurrency(detected)
-            } catch (error) {
-                console.error('Failed to detect currency:', error)
-            } finally {
-                setIsDetectingCurrency(false)
-            }
-        }
-        initCurrency()
-    }, [])
+    const [currency, setCurrency] = useState<CurrencyCode>(initialCurrency)
 
     const toggleSelection = (serviceName: string) => {
         const newSelected = new Set(selected)
@@ -116,128 +104,105 @@ export function OnboardingClient() {
                     <p className="text-lg text-slate-600 dark:text-slate-400">
                         Select the services you currently use. You can add custom ones later.
                     </p>
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Input
+                        placeholder="Search services..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                    />
                 </div>
 
-                {/* Currency Selector */}
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold">Select your currency</h2>
-                    <div className="w-40">
-                        {isDetectingCurrency ? (
-                            <div className="flex items-center gap-2 text-sm text-slate-500">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Detecting...
-                            </div>
-                        ) : (
-                            <CurrencySelector
-                                value={currency}
-                                onValueChange={(val) => setCurrency(val as CurrencyCode)}
-                            />
-                        )}
-                    </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                    {CATEGORIES.map(category => (
+                        <Badge
+                            key={category}
+                            variant={activeCategory === category ? "default" : "outline"}
+                            className="cursor-pointer"
+                            onClick={() => setActiveCategory(category)}
+                        >
+                            {category}
+                        </Badge>
+                    ))}
                 </div>
+            </div>
 
-                {/* Search & Filter */}
-                <div className="mb-6 space-y-4">
-                    <div className="relative max-w-md">
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                        <Input
-                            placeholder="Search services..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10"
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-2 flex-wrap">
-                        {CATEGORIES.map(category => (
-                            <Badge
-                                key={category}
-                                variant={activeCategory === category ? "default" : "outline"}
-                                className="cursor-pointer"
-                                onClick={() => setActiveCategory(category)}
+            {/* Subscription Grid */}
+            <ScrollArea className="h-[500px] mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pr-4">
+                    {filteredServices.map(service => {
+                        const isSelected = selected.has(service.name)
+                        return (
+                            <Card
+                                key={service.name}
+                                className={`cursor-pointer transition-all hover:shadow-md ${isSelected
+                                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20'
+                                    : 'border-slate-200 dark:border-slate-800'
+                                    }`}
+                                onClick={() => toggleSelection(service.name)}
                             >
-                                {category}
-                            </Badge>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Subscription Grid */}
-                <ScrollArea className="h-[500px] mb-8">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pr-4">
-                        {filteredServices.map(service => {
-                            const isSelected = selected.has(service.name)
-                            return (
-                                <Card
-                                    key={service.name}
-                                    className={`cursor-pointer transition-all hover:shadow-md ${isSelected
-                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20'
-                                            : 'border-slate-200 dark:border-slate-800'
-                                        }`}
-                                    onClick={() => toggleSelection(service.name)}
-                                >
-                                    <div className="p-4 space-y-3 relative">
-                                        {/* Selected Indicator */}
-                                        {isSelected && (
-                                            <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center">
-                                                <Check className="w-4 h-4 text-white" />
-                                            </div>
-                                        )}
-
-                                        {/* Avatar */}
-                                        <Avatar className="w-12 h-12">
-                                            <AvatarFallback className={service.color}>
-                                                {service.name[0]}
-                                            </AvatarFallback>
-                                        </Avatar>
-
-                                        {/* Service Info */}
-                                        <div>
-                                            <h3 className="font-semibold text-sm">{service.name}</h3>
-                                            <p className="text-xs text-slate-500">
-                                                From ${service.price}/mo
-                                            </p>
+                                <div className="p-4 space-y-3 relative">
+                                    {/* Selected Indicator */}
+                                    {isSelected && (
+                                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center">
+                                            <Check className="w-4 h-4 text-white" />
                                         </div>
+                                    )}
+
+                                    {/* Avatar */}
+                                    <Avatar className="w-12 h-12">
+                                        <AvatarFallback className={service.color}>
+                                            {service.name[0]}
+                                        </AvatarFallback>
+                                    </Avatar>
+
+                                    {/* Service Info */}
+                                    <div>
+                                        <h3 className="font-semibold text-sm">{service.name}</h3>
+                                        <p className="text-xs text-slate-500">
+                                            From ${service.price}/mo
+                                        </p>
                                     </div>
-                                </Card>
-                            )
-                        })}
-                    </div>
-                </ScrollArea>
+                                </div>
+                            </Card>
+                        )
+                    })}
+                </div>
+            </ScrollArea>
 
-                {/* Bottom Actions - Sticky */}
-                <div className="sticky bottom-0 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 p-6 -mx-4">
-                    <div className="container max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
-                            You can add, edit, or remove these anytime in your dashboard
-                        </p>
+            {/* Bottom Actions - Sticky */}
+            <div className="sticky bottom-0 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 p-6 -mx-4">
+                <div className="container max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                        You can add, edit, or remove these anytime in your dashboard
+                    </p>
 
-                        <div className="flex items-center gap-3">
-                            <Button variant="ghost" asChild disabled={loading}>
-                                <a href="/dashboard">Skip for now</a>
-                            </Button>
-                            <Button
-                                size="lg"
-                                disabled={selected.size === 0 || loading}
-                                className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700"
-                                onClick={handleContinue}
-                            >
-                                {loading ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Setting up...
-                                    </>
-                                ) : (
-                                    <>
-                                        Continue with {selected.size} subscription{selected.size !== 1 ? 's' : ''}
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </>
-                                )}
-                            </Button>
-                        </div>
+                    <div className="flex items-center gap-3">
+                        <Button variant="ghost" asChild disabled={loading}>
+                            <a href="/dashboard">Skip for now</a>
+                        </Button>
+                        <Button
+                            size="lg"
+                            disabled={selected.size === 0 || loading}
+                            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700"
+                            onClick={handleContinue}
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Setting up...
+                                </>
+                            ) : (
+                                <>
+                                    Continue with {selected.size} subscription{selected.size !== 1 ? 's' : ''}
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </>
+                            )}
+                        </Button>
                     </div>
                 </div>
             </div>
         </div>
+        </div >
     )
 }
