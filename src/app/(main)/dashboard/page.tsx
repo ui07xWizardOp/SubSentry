@@ -13,7 +13,15 @@ import {
     CreditCard,
 } from 'lucide-react'
 
-async function getDashboardData() {
+async function getDashboardData(): Promise<{
+    totalMonthlySpend: number
+    totalYearlySpend: number
+    activeSubscriptions: number
+    upcomingRenewals: any[]
+    subscriptions: any[]
+    budgetLimit: number
+    currency: CurrencyCode
+} | null> {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return null
@@ -107,7 +115,7 @@ export default async function DashboardPage() {
                     totalYearlySpend={stats?.totalYearlySpend || 0}
                     activeSubscriptions={stats?.activeSubscriptions || 0}
                     upcomingRenewals={stats?.upcomingRenewals.length || 0}
-                    currency={stats?.currency}
+                    currency={stats?.currency as CurrencyCode | undefined}
                 />
 
                 {/* Section Header */}
