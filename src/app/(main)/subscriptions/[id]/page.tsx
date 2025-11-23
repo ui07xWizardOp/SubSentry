@@ -141,6 +141,7 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
                 amount: Number(data.amount),
                 billing_cycle: data.billing_cycle,
                 start_date: data.start_date.toISOString().split('T')[0],
+                next_renewal_date: data.next_renewal_date.toISOString().split('T')[0],
                 reminder_days_before: 3, // Default value
                 category_id: data.category || null,
                 notes: data.notes || null,

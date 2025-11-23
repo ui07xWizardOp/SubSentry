@@ -7,6 +7,9 @@ export const subscriptionSchema = z.object({
     start_date: z.string().refine((date) => !isNaN(Date.parse(date)), {
         message: 'Invalid date format',
     }),
+    next_renewal_date: z.string().refine((date) => !isNaN(Date.parse(date)), {
+        message: 'Invalid date format',
+    }).optional(),
     reminder_days_before: z.number().min(0).max(30).default(3),
     category_id: z.string().optional().nullable(),
     is_trial: z.boolean().default(false),
