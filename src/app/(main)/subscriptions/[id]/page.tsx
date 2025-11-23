@@ -91,6 +91,13 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
         resolver: zodResolver(subscriptionSchema),
     })
 
+    // Debug: Log form errors whenever they change
+    useEffect(() => {
+        if (Object.keys(errors).length > 0) {
+            console.log('Form validation errors:', errors)
+        }
+    }, [errors])
+
     // Load subscription data
     useEffect(() => {
         const loadSubscription = async () => {
