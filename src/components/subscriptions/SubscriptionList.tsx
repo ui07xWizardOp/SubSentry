@@ -32,7 +32,14 @@ export function SubscriptionList() {
             const res = await fetch('/api/subscriptions')
             if (res.ok) {
                 const data = await res.json()
-                setSubscriptions(data)
+                // Normalize data: convert null to undefined for optional fields
+                const normalizedData = data.map((sub: any) => ({
+                    ...sub,
+                    category_id: sub.category_id ?? undefined,
+                    notes: sub.notes ?? undefined,
+                    website_url: sub.website_url ?? undefined,
+                }))
+                setSubscriptions(normalizedData)
             }
         } catch {
             console.error('Failed to fetch subscriptions')
