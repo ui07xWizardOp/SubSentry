@@ -311,7 +311,7 @@ export default function EditSubscriptionPage({ params }: { params: { id: string 
                             <div className="space-y-2">
                                 <Label htmlFor="currency">Currency</Label>
                                 <CurrencySelector
-                                    value={watch('currency') || 'USD'}
+                                    value={(watch('currency') as CurrencyCode) || 'USD'}
                                     onValueChange={(value) => setValue('currency', value as CurrencyCode)}
                                 />
                             </div>
