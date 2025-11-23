@@ -168,6 +168,7 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
             if (!res.ok) {
                 const error = await res.json()
                 console.error('API returned error:', error) // Debug: Show API errors
+                console.error('Validation details:', JSON.stringify(error.details, null, 2)) // Show full details
                 throw new Error(error.error || 'Failed to update subscription')
             }
 
