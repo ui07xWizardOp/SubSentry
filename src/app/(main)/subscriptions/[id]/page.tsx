@@ -424,7 +424,7 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
                         <div className="space-y-2">
                             <Label htmlFor="category">Category</Label>
                             <Select
-                                value={watch('category')}
+                                value={watch('category') ?? undefined}
                                 onValueChange={(value) => setValue('category', value)}
                             >
                                 <SelectTrigger>
