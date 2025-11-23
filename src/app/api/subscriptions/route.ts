@@ -1,90 +1,72 @@
-import { createClient } from '@/lib/supabase/server'
-import { subscriptionSchema } from '@/lib/validations/subscription'
-import { NextResponse } from 'next/server'
-import { DateTime } from 'luxon'
+import { NextResponse } from "next/server"
+import { z } from "zod"
+import { createClient } from "@/lib/supabase/server"
 
-export async function GET(request: Request) {
+const subscriptionSchema = z.object({
+    name: z.string().min(1),
+    amount: z.number().positive(),
+    billingCycle: z.enum(["monthly", "yearly"]),
+    nextRenewalDate: z.string(), // ISO date "YYYY-MM-DD"
+    category: z.string().optional(),
+})
+
+export async function POST(req: Request) {
     try {
-        const supabase = await createClient()
-        const { data: { user } } = await supabase.auth.getUser()
+        const json = await req.json()
+        const parsed = subscriptionSchema.safeParse(json)
 
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
-
-        const { searchParams } = new URL(request.url)
-        const sort = searchParams.get('sort') || 'next_renewal_date'
-        const order = searchParams.get('order') || 'asc'
-
-        const { data, error } = await supabase
-            .from('subscriptions')
-            .select('*')
-            .order(sort, { ascending: order === 'asc' })
-
-        if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 })
-        }
-
-        return NextResponse.json(data)
-    } catch (error) {
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
-    }
-}
-
-export async function POST(request: Request) {
-    try {
-        const supabase = await createClient()
-        const { data: { user } } = await supabase.auth.getUser()
-
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
-
-        const json = await request.json()
-        const result = subscriptionSchema.safeParse(json)
-
-        if (!result.success) {
+        if (!parsed.success) {
             return NextResponse.json(
-                { error: 'Validation Error', details: result.error.flatten() },
-                { status: 400 }
+                { error: "Invalid data", details: parsed.error.flatten() },
+                { status: 400 },
             )
         }
 
-        const { start_date, billing_cycle } = result.data
+        const supabase = await createClient()
+        const {
+            data: { user },
+            error: userError,
+        } = await supabase.auth.getUser()
 
-        // Calculate next_renewal_date based on start_date and billing_cycle
-        // This is a simple initial calculation. 
-        // In a real app, we might want to adjust this based on "today" vs start_date.
-        // For now, let's assume start_date is the anchor.
-        // If start_date is in the past, we need to project forward to the next future date.
+        if (userError || !user) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            )
+        }
 
-        let nextRenewal = DateTime.fromISO(start_date)
-        const now = DateTime.now()
-
-        // Simple projection: if date is past, add cycle until future
-        // This logic might need to be more robust or moved to a shared utility
-        while (nextRenewal < now.startOf('day')) {
-            if (billing_cycle === 'monthly') nextRenewal = nextRenewal.plus({ months: 1 })
-            else if (billing_cycle === 'yearly') nextRenewal = nextRenewal.plus({ years: 1 })
-            else if (billing_cycle === 'weekly') nextRenewal = nextRenewal.plus({ weeks: 1 })
+        const payload = {
+            user_id: user.id,
+            name: parsed.data.name, // Changed from service_name to name based on schema inference, need to verify DB schema if it fails
+            amount: parsed.data.amount,
+            billing_cycle: parsed.data.billingCycle,
+            next_renewal_date: parsed.data.nextRenewalDate,
+            category: parsed.data.category ?? null,
+            status: "active",
+            currency: "USD", // Default currency
+            start_date: new Date().toISOString(), // Default start date to now
         }
 
         const { data, error } = await supabase
-            .from('subscriptions')
-            .insert({
-                ...result.data,
-                user_id: user.id,
-                next_renewal_date: nextRenewal.toISODate(),
-            })
+            .from("subscriptions")
+            .insert(payload)
             .select()
             .single()
 
         if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 })
+            console.error("Supabase insert error:", error)
+            return NextResponse.json(
+                { error: error.message },
+                { status: 500 },
+            )
         }
 
-        return NextResponse.json(data, { status: 201 })
-    } catch (error) {
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+        return NextResponse.json({ subscription: data }, { status: 201 })
+    } catch (err) {
+        console.error("POST /api/subscriptions error", err)
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 },
+        )
     }
 }

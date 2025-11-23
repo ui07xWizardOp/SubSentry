@@ -1,9 +1,25 @@
-import { AppShell } from '@/components/layout/AppShell'
+import type { ReactNode } from "react"
+import { AppShell } from "@/components/layout/AppShell"
+import { createClient } from "@/lib/supabase/server"
 
-export default function MainLayout({
+export default async function MainLayout({
     children,
 }: {
-    children: React.ReactNode
+    children: ReactNode
 }) {
-    return <AppShell>{children}</AppShell>
+    const supabase = await createClient()
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
+
+    return (
+        <AppShell
+            currentUser={{
+                name: user?.user_metadata?.full_name ?? user?.email ?? "User",
+                email: user?.email ?? "",
+            }}
+        >
+            {children}
+        </AppShell>
+    )
 }
