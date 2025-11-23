@@ -4,7 +4,7 @@ import { ReactNode } from "react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Navbar } from "./Navbar"
+import { Sidebar } from "./Sidebar"
 
 type AppShellProps = {
     children: ReactNode
@@ -25,15 +25,13 @@ export function AppShell({ children, currentUser }: AppShellProps) {
 
     return (
         <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950">
-            {/* Sidebar - Assuming Navbar acts as sidebar or top nav, keeping structure similar to previous but adapting to new shell */}
-            <Navbar />
+            <Sidebar />
 
-            <div className="flex-1 flex flex-col pl-64"> {/* Added padding-left to account for fixed sidebar if Navbar is sidebar */}
+            <div className="flex-1 flex flex-col md:pl-64">
                 {/* Topbar */}
                 <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur flex items-center justify-between px-4 md:px-6 sticky top-0 z-10">
                     {/* Left: Logo / Breadcrumbs */}
                     <div className="font-semibold text-sm md:text-base">
-                        {/* breadcrumb or logo */}
                         Dashboard
                     </div>
 
