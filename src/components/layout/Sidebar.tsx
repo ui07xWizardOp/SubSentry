@@ -11,6 +11,7 @@ import {
     Sparkles,
     BarChart3
 } from 'lucide-react'
+import { ThemeToggle } from '@/components/settings/ThemeToggle'
 
 const sidebarItems = [
     {
@@ -74,6 +75,9 @@ export function Sidebar() {
                         </Link>
                     )
                 })}
+            </div>
+            <div className="mt-auto p-4 border-t border-slate-200 dark:border-slate-800">
+                <ThemeToggle />
             </div>
         </aside>
     )
