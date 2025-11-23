@@ -5,7 +5,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Navbar } from "./Navbar"
-import { SettingsSidebar } from "./SettingsSidebar"
 
 type AppShellProps = {
     children: ReactNode

@@ -62,7 +62,7 @@ export default function PreferencesPage() {
                 title: "Preferences Saved",
                 description: "Your preferences have been updated.",
             })
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Failed to save preferences.",

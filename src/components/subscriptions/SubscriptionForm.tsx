@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { subscriptionSchema, type SubscriptionFormData } from '@/lib/validations/subscription'
 import { Button } from '@/components/ui/button'
@@ -25,7 +25,7 @@ export function SubscriptionForm({ initialData, onSuccess }: SubscriptionFormPro
         handleSubmit,
         formState: { errors },
     } = useForm<SubscriptionFormData>({
-        resolver: zodResolver(subscriptionSchema) as any,
+        resolver: zodResolver(subscriptionSchema) as Resolver<SubscriptionFormData>,
         defaultValues: initialData || {
             service_name: '',
             amount: 0,
@@ -76,8 +76,8 @@ export function SubscriptionForm({ initialData, onSuccess }: SubscriptionFormPro
 
             router.refresh()
             if (onSuccess) onSuccess()
-        } catch (err: any) {
-            setError(err.message)
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'An error occurred')
         } finally {
             setLoading(false)
         }

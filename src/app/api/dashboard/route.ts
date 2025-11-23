@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { DateTime } from 'luxon'
 
-export async function GET(request: Request) {
+export async function GET() {
     try {
         const supabase = await createClient()
         const { data: { user } } = await supabase.auth.getUser()
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
             activeSubscriptions,
             upcomingRenewals
         })
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }

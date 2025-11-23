@@ -11,9 +11,14 @@ interface Subscription {
     id: string
     service_name: string
     amount: number
-    billing_cycle: string
+    billing_cycle: "monthly" | "yearly" | "weekly"
     next_renewal_date: string
     status: string
+    reminder_days_before?: number
+    category_id?: string | null
+    is_trial?: boolean
+    notes?: string | null
+    website_url?: string | null
 }
 
 export function SubscriptionList() {
@@ -29,8 +34,8 @@ export function SubscriptionList() {
                 const data = await res.json()
                 setSubscriptions(data)
             }
-        } catch (error) {
-            console.error('Failed to fetch subscriptions', error)
+        } catch {
+            console.error('Failed to fetch subscriptions')
         } finally {
             setLoading(false)
         }
@@ -48,8 +53,8 @@ export function SubscriptionList() {
             if (res.ok) {
                 setSubscriptions(prev => prev.filter(sub => sub.id !== id))
             }
-        } catch (error) {
-            console.error('Failed to delete', error)
+        } catch {
+            console.error('Failed to delete')
         }
     }
 
@@ -83,7 +88,15 @@ export function SubscriptionList() {
                     </DialogTrigger>
                     <DialogContent>
                         <SubscriptionForm
-                            initialData={editingSubscription as any}
+                            initialData={editingSubscription ? {
+                                ...editingSubscription,
+                                start_date: editingSubscription.next_renewal_date,
+                                reminder_days_before: editingSubscription.reminder_days_before || 3,
+                                is_trial: editingSubscription.is_trial || false,
+                                category_id: editingSubscription.category_id || undefined,
+                                notes: editingSubscription.notes || undefined,
+                                website_url: editingSubscription.website_url || undefined,
+                            } : undefined}
                             onSuccess={handleSuccess}
                         />
                     </DialogContent>

@@ -1,6 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { DateTime } from 'luxon'
 
 // This endpoint should be called by a cron job (e.g., Vercel Cron)
 // It must be secured by a secret key
@@ -31,7 +29,7 @@ export async function GET(request: Request) {
         // for admin tasks.
 
         return NextResponse.json({ message: 'Reminder job executed (simulation)' })
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }

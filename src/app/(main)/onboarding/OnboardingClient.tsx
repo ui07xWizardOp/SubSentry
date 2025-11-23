@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -36,7 +35,6 @@ interface OnboardingClientProps {
 }
 
 export function OnboardingClient({ initialCurrency }: OnboardingClientProps) {
-    const router = useRouter()
     const { toast } = useToast()
     const [selected, setSelected] = useState<Set<string>>(new Set())
     const [searchQuery, setSearchQuery] = useState('')

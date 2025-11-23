@@ -6,7 +6,7 @@ interface DashboardStatsProps {
         totalMonthlySpend: number
         totalYearlySpend: number
         activeSubscriptions: number
-        upcomingRenewals: any[]
+        upcomingRenewals: { id: string }[]
     }
 }
 

@@ -36,7 +36,7 @@ export default function DataPrivacyPage() {
                 title: "Data Export Started",
                 description: "Your data is being prepared. You will receive an email with the download link shortly.",
             })
-        } catch (error) {
+        } catch {
             toast({
                 title: "Export Failed",
                 description: "Failed to start data export. Please try again.",
@@ -65,7 +65,7 @@ export default function DataPrivacyPage() {
             })
 
             router.push('/login')
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Failed to delete account. Please contact support.",

@@ -41,9 +41,7 @@ export async function GET(request: Request) {
     const results = []
 
     for (const sub of subscriptions) {
-        // @ts-ignore - Supabase types might not automatically infer the join
         const userEmail = sub.user?.email
-        // @ts-ignore
         const renewalAlertsEnabled = sub.user_preferences?.renewal_alerts ?? true // Default to true
 
         if (userEmail && renewalAlertsEnabled) {

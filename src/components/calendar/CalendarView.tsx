@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { format, isSameDay, parseISO } from "date-fns"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"

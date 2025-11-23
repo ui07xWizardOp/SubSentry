@@ -70,7 +70,7 @@ export function SubscriptionList({ initialSubscriptions, viewMode = 'full' }: Su
                 title: "Subscription deleted",
                 description: "The subscription has been successfully removed.",
             })
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Failed to delete subscription.",
@@ -89,7 +89,7 @@ export function SubscriptionList({ initialSubscriptions, viewMode = 'full' }: Su
                 title: "Subscription paused",
                 description: "The subscription has been paused.",
             })
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Failed to pause subscription.",
@@ -108,7 +108,7 @@ export function SubscriptionList({ initialSubscriptions, viewMode = 'full' }: Su
                 title: "Subscription resumed",
                 description: "The subscription is now active.",
             })
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Failed to resume subscription.",

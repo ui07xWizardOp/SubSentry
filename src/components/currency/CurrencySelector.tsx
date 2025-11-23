@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select"
 
 interface CurrencySelectorProps {
-    value: string
+    value: CurrencyCode
     onValueChange: (value: string) => void
     disabled?: boolean
 }

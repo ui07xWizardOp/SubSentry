@@ -23,7 +23,6 @@ export default async function AnalyticsPage() {
     // Calculate metrics
     const totalMonthlySpend = subs.reduce((acc, sub) => acc + sub.amount, 0)
     const totalYearlySpend = totalMonthlySpend * 12
-    const averageCost = subs.length > 0 ? totalMonthlySpend / subs.length : 0
 
     // Find most expensive category
     const categorySpend: Record<string, number> = {}

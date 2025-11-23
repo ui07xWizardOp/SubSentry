@@ -18,8 +18,6 @@ export function StatsGrid({
     upcomingRenewals,
     currency = 'USD'
 }: StatsGridProps) {
-    const currencySymbol = getCurrencySymbol(currency)
-
     return (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {/* Monthly Spend */}

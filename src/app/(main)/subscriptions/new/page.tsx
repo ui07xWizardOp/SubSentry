@@ -58,8 +58,8 @@ export default function NewSubscriptionPage() {
             // Success: go back to dashboard & refresh data
             router.push("/dashboard")
             router.refresh()
-        } catch (err: any) {
-            setError(err.message ?? "Something went wrong.")
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Something went wrong.")
             setSubmitting(false)
         }
     }

@@ -13,12 +13,27 @@ import {
     CreditCard,
 } from 'lucide-react'
 
+type Subscription = {
+    id: string
+    name: string
+    amount: number
+    currency: string
+    billing_cycle: string
+    next_renewal_date: string
+    status: string
+    category?: string
+    user_id: string
+    created_at: string
+    updated_at: string
+    daysUntilRenewal: number
+}
+
 async function getDashboardData(): Promise<{
     totalMonthlySpend: number
     totalYearlySpend: number
     activeSubscriptions: number
-    upcomingRenewals: any[]
-    subscriptions: any[]
+    upcomingRenewals: Subscription[]
+    subscriptions: Subscription[]
     budgetLimit: number
     currency: CurrencyCode
 } | null> {

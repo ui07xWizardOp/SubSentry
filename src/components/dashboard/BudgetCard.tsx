@@ -16,7 +16,6 @@ export function BudgetCard({ monthlySpend, budgetLimit = 100, currency = 'USD' }
     const percentage = (monthlySpend / budgetLimit) * 100
     const isOverBudget = monthlySpend > budgetLimit
     const isNearBudget = percentage >= 90 && !isOverBudget
-    const symbol = getCurrencySymbol(currency)
 
     return (
         <Card className={`${isOverBudget ? 'border-red-500 dark:border-red-900' : isNearBudget ? 'border-amber-500 dark:border-amber-900' : ''}`}>
