@@ -15,10 +15,10 @@ interface Subscription {
     next_renewal_date: string
     status: string
     reminder_days_before?: number
-    category_id?: string | null
+    category_id?: string
     is_trial?: boolean
-    notes?: string | null
-    website_url?: string | null
+    notes?: string
+    website_url?: string
 }
 
 export function SubscriptionList() {
