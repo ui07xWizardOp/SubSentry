@@ -132,6 +132,7 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
     }, [id, supabase, setValue, toast, router])
 
     const onSubmit = async (data: SubscriptionFormData) => {
+        console.log('onSubmit called!', data) // Debug: Check if function is even called
         setLoading(true)
 
         try {
@@ -159,6 +160,7 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
 
             if (!res.ok) {
                 const error = await res.json()
+                console.error('API returned error:', error) // Debug: Show API errors
                 throw new Error(error.error || 'Failed to update subscription')
             }
 
@@ -469,6 +471,7 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
                     <Button
                         type="submit"
                         disabled={loading}
+                        onClick={() => console.log('Save button clicked!')} // Debug: Check if button responds
                         className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700"
                     >
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
