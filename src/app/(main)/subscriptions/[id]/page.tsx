@@ -135,18 +135,18 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
         setLoading(true)
 
         try {
-            // Use the API route instead of direct Supabase call
+            // Use the API route with correct field names matching actual database
             const payload = {
-                service_name: data.name,
+                name: data.name,
                 amount: Number(data.amount),
+                currency: data.currency,
                 billing_cycle: data.billing_cycle,
                 start_date: data.start_date.toISOString().split('T')[0],
                 next_renewal_date: data.next_renewal_date.toISOString().split('T')[0],
-                reminder_days_before: 3, // Default value
-                category_id: data.category || null,
-                notes: data.notes || null,
-                website_url: data.payment_method || null, // Using payment_method field for website_url temporarily
-                is_trial: false,
+                category: data.category || null,
+                status: data.status,
+                description: data.notes || null,
+                website_url: data.payment_method || null,
             }
 
             const res = await fetch(`/api/subscriptions/${id}`, {

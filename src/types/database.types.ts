@@ -15,62 +15,80 @@ export interface Database {
                     user_id: string
                     name: string
                     amount: number
+                    currency: string
                     billing_cycle: 'monthly' | 'yearly' | 'weekly'
                     start_date: string
                     next_renewal_date: string
-                    reminder_days_before: number
-                    status: 'active' | 'paused'
-                    category_id: string | null
+                    category: string | null
+                    status: string
+                    description: string | null
+                    website_url: string | null
                     created_at: string
+                    updated_at: string
                 }
                 Insert: {
                     id?: string
                     user_id: string
                     name: string
                     amount: number
+                    currency: string
                     billing_cycle: 'monthly' | 'yearly' | 'weekly'
                     start_date: string
                     next_renewal_date: string
-                    reminder_days_before?: number
-                    status?: 'active' | 'paused'
-                    category_id?: string | null
+                    category?: string | null
+                    status?: string
+                    description?: string | null
+                    website_url?: string | null
                     created_at?: string
+                    updated_at?: string
                 }
                 Update: {
                     id?: string
                     user_id?: string
                     name?: string
                     amount?: number
+                    currency?: string
                     billing_cycle?: 'monthly' | 'yearly' | 'weekly'
                     start_date?: string
                     next_renewal_date?: string
-                    reminder_days_before?: number
-                    status?: 'active' | 'paused'
-                    category_id?: string | null
+                    category?: string | null
+                    status?: string
+                    description?: string | null
+                    website_url?: string | null
                     created_at?: string
+                    updated_at?: string
                 }
             }
-            categories: {
+            user_preferences: {
                 Row: {
-                    id: string
-                    name: string
-                    color: string
-                    icon: string
+                    user_id: string
+                    renewal_alerts: boolean
+                    price_changes: boolean
+                    marketing_emails: boolean
+                    monthly_budget: number | null
+                    currency: string
                     created_at: string
+                    updated_at: string
                 }
                 Insert: {
-                    id?: string
-                    name: string
-                    color: string
-                    icon: string
+                    user_id: string
+                    renewal_alerts?: boolean
+                    price_changes?: boolean
+                    marketing_emails?: boolean
+                    monthly_budget?: number | null
+                    currency?: string
                     created_at?: string
+                    updated_at?: string
                 }
                 Update: {
-                    id?: string
-                    name?: string
-                    color?: string
-                    icon?: string
+                    user_id?: string
+                    renewal_alerts?: boolean
+                    price_changes?: boolean
+                    marketing_emails?: boolean
+                    monthly_budget?: number | null
+                    currency?: string
                     created_at?: string
+                    updated_at?: string
                 }
             }
         }
