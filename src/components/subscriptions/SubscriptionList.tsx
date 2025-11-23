@@ -33,7 +33,7 @@ export function SubscriptionList() {
             if (res.ok) {
                 const data = await res.json()
                 // Normalize data: convert null to undefined for optional fields
-                const normalizedData = data.map((sub: any) => ({
+                const normalizedData = data.map((sub: Subscription) => ({
                     ...sub,
                     category_id: sub.category_id ?? undefined,
                     notes: sub.notes ?? undefined,
