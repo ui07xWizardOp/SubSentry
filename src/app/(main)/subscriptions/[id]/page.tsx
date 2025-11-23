@@ -139,15 +139,17 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
             const payload = {
                 name: data.name,
                 amount: Number(data.amount),
-                currency: data.currency,
+                currency: data.currency, // Form provides this
                 billing_cycle: data.billing_cycle,
                 start_date: data.start_date.toISOString().split('T')[0],
                 next_renewal_date: data.next_renewal_date.toISOString().split('T')[0],
                 category: data.category || null,
-                status: data.status,
-                description: data.notes || null,
-                website_url: data.payment_method || null,
+                status: data.status, // Form provides this
+                description: data.notes || null, // Form calls it 'notes', DB calls it 'description'
+                website_url: data.payment_method || null, // Form calls it 'payment_method', DB calls it 'website_url'
             }
+
+            console.log('Payload being sent:', payload) // Debug log
 
             const res = await fetch(`/api/subscriptions/${id}`, {
                 method: 'PUT',
