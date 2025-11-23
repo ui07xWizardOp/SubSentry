@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { use, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -65,7 +65,10 @@ const CATEGORIES = [
     'Other',
 ]
 
-export default function EditSubscriptionPage({ params }: { params: { id: string } }) {
+export default function EditSubscriptionPage({ params }: { params: Promise<{ id: string }> }) {
+    // Unwrap the params Promise using React.use()
+    const { id } = use(params)
+
     const router = useRouter()
     const { toast } = useToast()
     const [loading, setLoading] = useState(false)
@@ -95,7 +98,7 @@ export default function EditSubscriptionPage({ params }: { params: { id: string 
                 const { data, error } = await supabase
                     .from('subscriptions')
                     .select('*')
-                    .eq('id', params.id)
+                    .eq('id', id)
                     .single()
 
                 if (error) throw error
@@ -126,7 +129,7 @@ export default function EditSubscriptionPage({ params }: { params: { id: string 
         }
 
         loadSubscription()
-    }, [params.id, supabase, setValue, toast, router])
+    }, [id, supabase, setValue, toast, router])
 
     const onSubmit = async (data: SubscriptionFormData) => {
         setLoading(true)
@@ -146,7 +149,7 @@ export default function EditSubscriptionPage({ params }: { params: { id: string 
                     payment_method: data.payment_method,
                     status: data.status,
                 })
-                .eq('id', params.id)
+                .eq('id', id)
 
             if (error) throw error
 
@@ -176,7 +179,7 @@ export default function EditSubscriptionPage({ params }: { params: { id: string 
             const { error } = await supabase
                 .from('subscriptions')
                 .delete()
-                .eq('id', params.id)
+                .eq('id', id)
 
             if (error) throw error
 
