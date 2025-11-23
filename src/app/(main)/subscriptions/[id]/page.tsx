@@ -45,9 +45,9 @@ const subscriptionSchema = z.object({
     billing_cycle: z.enum(['weekly', 'monthly', 'yearly']),
     start_date: z.date(),
     next_renewal_date: z.date(),
-    category: z.string().optional(),
-    notes: z.string().max(500).optional(),
-    payment_method: z.string().optional(),
+    category: z.string().optional().nullable().or(z.literal('')), // Allow null, undefined, or empty string
+    notes: z.string().max(500).optional().nullable().or(z.literal('')),
+    payment_method: z.string().optional().nullable().or(z.literal('')),
     status: z.enum(['active', 'paused', 'cancelled']),
 })
 
