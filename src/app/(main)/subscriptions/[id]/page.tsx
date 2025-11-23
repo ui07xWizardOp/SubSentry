@@ -135,23 +135,29 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
         setLoading(true)
 
         try {
-            const { error } = await supabase
-                .from('subscriptions')
-                .update({
-                    name: data.name,
-                    amount: Number(data.amount),
-                    currency: data.currency,
-                    billing_cycle: data.billing_cycle,
-                    start_date: data.start_date.toISOString(),
-                    next_renewal_date: data.next_renewal_date.toISOString(),
-                    category: data.category || 'Other',
-                    notes: data.notes,
-                    payment_method: data.payment_method,
-                    status: data.status,
-                })
-                .eq('id', id)
+            // Use the API route instead of direct Supabase call
+            const payload = {
+                service_name: data.name,
+                amount: Number(data.amount),
+                billing_cycle: data.billing_cycle,
+                start_date: data.start_date.toISOString().split('T')[0],
+                reminder_days_before: 3, // Default value
+                category_id: data.category || null,
+                notes: data.notes || null,
+                website_url: data.payment_method || null, // Using payment_method field for website_url temporarily
+                is_trial: false,
+            }
 
-            if (error) throw error
+            const res = await fetch(`/api/subscriptions/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            })
+
+            if (!res.ok) {
+                const error = await res.json()
+                throw new Error(error.error || 'Failed to update subscription')
+            }
 
             toast({
                 title: 'Success!',
@@ -164,7 +170,7 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
             console.error('Error updating subscription:', error)
             toast({
                 title: 'Error',
-                description: 'Failed to update subscription. Please try again.',
+                description: error instanceof Error ? error.message : 'Failed to update subscription. Please try again.',
                 variant: 'destructive',
             })
         } finally {
@@ -176,12 +182,14 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
         setDeleting(true)
 
         try {
-            const { error } = await supabase
-                .from('subscriptions')
-                .delete()
-                .eq('id', id)
+            const res = await fetch(`/api/subscriptions/${id}`, {
+                method: 'DELETE',
+            })
 
-            if (error) throw error
+            if (!res.ok) {
+                const error = await res.json()
+                throw new Error(error.error || 'Failed to delete subscription')
+            }
 
             toast({
                 title: 'Deleted',
@@ -194,7 +202,7 @@ export default function EditSubscriptionPage({ params }: { params: Promise<{ id:
             console.error('Error deleting subscription:', error)
             toast({
                 title: 'Error',
-                description: 'Failed to delete subscription. Please try again.',
+                description: error instanceof Error ? error.message : 'Failed to delete subscription. Please try again.',
                 variant: 'destructive',
             })
             setDeleting(false)
